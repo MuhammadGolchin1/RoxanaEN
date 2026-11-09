@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { sitePath } from "../lib/paths.js";
 import SiteLayout from "../components/SiteLayout.jsx";
 function HeroVideo() {
   const [posterLoaded, setPosterLoaded] = useState(false);
   const [loadVideo, setLoadVideo] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
-  const poster = "/roxana-hero-poster.webp";
+  const poster = sitePath('/roxana-hero-poster.webp');
   useEffect(() => {
     if (!posterLoaded) return;
     const s = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -44,7 +45,7 @@ function HeroVideo() {
         />
         {loadVideo && !videoFailed && (
           <video
-            src="/roxana-hero-background.mp4"
+            src={sitePath('/roxana-hero-background.mp4')}
             poster={poster}
             width="1920"
             height="1080"
@@ -166,7 +167,7 @@ function HomeContent() {
         <div className="service-grid">
           <a
             className="service-card"
-            href="/assessment/"
+            href={sitePath('/assessment/')}
             aria-labelledby="assessment-link-title"
           >
             <span className="service-icon" aria-hidden="true">
@@ -195,7 +196,7 @@ function HomeContent() {
           </a>
           <a
             className="service-card"
-            href="/questionnaire/"
+            href={sitePath('/questionnaire/')}
             aria-labelledby="coaching-link-title"
           >
             <span className="service-icon" aria-hidden="true">
@@ -256,7 +257,7 @@ function WelcomeScreen({ children: children }) {
                 viewBox="192 64 912 1176"
                 fill="none"
               >
-                <image href="/roxana-logo.png" width="1254" height="1254" />
+                <image href={sitePath('/roxana-logo.png')} width="1254" height="1254" />
               </svg>
             </div>
             <p className="welcome-screen__message">

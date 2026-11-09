@@ -1,4 +1,5 @@
 import React from "react";
+import { sitePath } from "../lib/paths.js";
 const INFORMATION_PAGES = [
   {
     slug: "faq",
@@ -60,10 +61,10 @@ function SiteFooter() {
           <div className="site-footer__intro">
             <a
               className="site-footer__brand"
-              href="/"
+              href={sitePath('/')}
               aria-label="Roxana, home page"
             >
-              <img src="/roxana-logo.png" width="64" height="64" alt="" />
+              <img src={sitePath('/roxana-logo.png')} width="64" height="64" alt="" />
               <span>
                 <strong>Roxana</strong>
                 <span>Lifestyle &amp; Fitness</span>
@@ -77,7 +78,7 @@ function SiteFooter() {
               {INFORMATION_PAGES.filter(({ slug: O }) => O !== "contact").map(
                 ({ slug: O, title: sl }) => (
                   <li key={O}>
-                    <a href={`/${O}/`}>{sl}</a>
+                    <a href={sitePath(`/${O}/`)}>{sl}</a>
                   </li>
                 ),
               )}
@@ -115,7 +116,7 @@ function SiteFooter() {
                     aria-label={`${O} Roxana (opens in a new tab)`}
                   >
                     <img
-                      src={`/social/${sl}`}
+                      src={sitePath(`/social/${sl}`)}
                       width="32"
                       height="32"
                       alt=""

@@ -1,11 +1,12 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
+import { currentRoute } from "./lib/paths.js";
 import "./styles/footer.css";
 
 // The source site has a separate visual theme for its questionnaire.
 // Load the same page-specific styles, then apply the English direction layer.
-const route = window.location.pathname.split("/").filter(Boolean)[0] || "";
+const route = currentRoute();
 if (route === "questionnaire") {
   await import("./styles/questionnaire.css");
 } else {

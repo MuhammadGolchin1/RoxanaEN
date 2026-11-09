@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { createHandler } from './server/forms.js';
+import { pagesEntries } from './server/pages-build.js';
 
 function localForms(environment) {
   const handler = createHandler();
@@ -29,7 +30,8 @@ function localForms(environment) {
 export default defineConfig(({ mode }) => {
   const environment = { ...loadEnv(mode, process.cwd(), ''), ...process.env };
   return {
-    plugins: [react(), localForms(environment)],
+    base: environment.VITE_BASE_PATH || '/',
+    plugins: [react(), pagesEntries(), localForms(environment)],
     server: {
       host: '127.0.0.1', port: 5173, strictPort: true,
     },

@@ -79,3 +79,18 @@ test('video supports byte ranges and HEAD requests',async()=>{
   assert.equal((await app.fetch(new Request('https://example.test/video.mp4',{headers:{range:'bytes=100-'}}))).status,416);
   assert.equal(await(await app.fetch(new Request('https://example.test/video.mp4',{method:'HEAD'}))).text(),'');
 });
+
+test('the configured Pages origin can submit and preflight, while unrelated origins are blocked',async()=>{
+  let calls=0;
+  const app=createHandler({},async()=>{calls++;return Response.json({ok:true});});
+  const allowedEnv={...env,BALE_ALLOWED_ORIGINS:'https://muhammadgolchin1.github.io'};
+  const options=new Request('https://example.test/api/forms',{method:'OPTIONS',headers:{origin:'https://muhammadgolchin1.github.io','sec-fetch-site':'cross-site'}});
+  const preflight=await app.fetch(options,allowedEnv);
+  assert.equal(preflight.status,204);assert.equal(preflight.headers.get('access-control-allow-origin'),'https://muhammadgolchin1.github.io');
+  assert.equal(calls,0);
+  const form=request('assessment',assessment());form.headers.set('origin','https://muhammadgolchin1.github.io');form.headers.set('sec-fetch-site','cross-site');
+  const submitted=await app.fetch(form,allowedEnv);
+  assert.equal((await submitted.json()).status,'submitted');assert.equal(submitted.headers.get('access-control-allow-origin'),'https://muhammadgolchin1.github.io');assert.equal(calls,2);
+  const blocked=await app.fetch(new Request('https://example.test/api/forms',{method:'OPTIONS',headers:{origin:'https://foreign.test'}}),allowedEnv);
+  assert.equal(blocked.status,403);assert.equal(blocked.headers.get('access-control-allow-origin'),null);
+});

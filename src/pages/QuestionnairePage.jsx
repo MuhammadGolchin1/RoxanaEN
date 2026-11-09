@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { sitePath } from "../lib/paths.js";
 import SiteFooter from "../components/SiteFooter.jsx";
 import { parseMeasurement, validateContact } from "../lib/assessment.js";
 import { sendSubmission } from "../lib/submission.js";
@@ -603,8 +604,8 @@ function QuestionnairePage() {
       </a>
       <header className="q-header">
         <div className="q-container q-header-inner">
-          <a className="q-brand" href="/" aria-label="Roxana home">
-            <img src="/roxana-logo.png" alt="" />
+          <a className="q-brand" href={sitePath('/')} aria-label="Roxana home">
+            <img src={sitePath('/roxana-logo.png')} alt="" />
             <span>
               Roxana<small>By your side, for a better you</small>
             </span>

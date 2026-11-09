@@ -36,6 +36,12 @@ function connectionWasBlocked(error) {
 function deliveryResponse(result) {
   return json(result, result.status === 'failed' ? 502 : 200);
 }
+function requestOriginAllowed(request, env) {
+  const origin = request.headers.get('origin');
+  if (!origin) return request.headers.get('sec-fetch-site') !== 'cross-site';
+  if (origin === new URL(request.url).origin) return true;
+  return String(env.BALE_ALLOWED_ORIGINS || '').split(',').some(value => value.trim() === origin);
+}
 function normalize(value) {
   return String(value ?? '').replace(/[۰-۹٠-٩]/g, d => String('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩'.indexOf(d) % 10));
 }
@@ -102,8 +108,7 @@ function messageParts(kind, payload) {
 export function createHandler(assetManifest = {}, upstreamFetch = globalThis.fetch) {
   const decoded = new Map(), completed = new Map(), inflight = new Map();
   async function submit(request, env) {
-    const url = new URL(request.url), origin = request.headers.get('origin');
-    if ((origin && origin !== url.origin) || request.headers.get('sec-fetch-site') === 'cross-site') return json({error:'Invalid request origin.'},403);
+    if (!requestOriginAllowed(request, env)) return json({error:'Invalid request origin.'},403);
     if (!request.headers.get('content-type')?.startsWith('multipart/form-data')) return json({error:'Expected form data.'},415);
     if (Number(request.headers.get('content-length') || 0) > 16*1024*1024) return json({error:'The form is too large.'},413);
     let chatIds;
@@ -188,8 +193,21 @@ export function createHandler(assetManifest = {}, upstreamFetch = globalThis.fet
     async fetch(request, env = {}) {
       const url=new URL(request.url);
       if(url.pathname==='/api/forms'){
-        if(request.method!=='POST')return json({error:'Method not allowed.'},405);
-        return submit(request,env);
+        if (!requestOriginAllowed(request, env)) return json({error:'Invalid request origin.'},403);
+        let response;
+        if(request.method==='OPTIONS') response = new Response(null, {status:204});
+        else if(request.method==='POST') response = await submit(request,env);
+        else response = json({error:'Method not allowed.'},405);
+        const origin = request.headers.get('origin');
+        if (origin) {
+          const headers = new Headers(response.headers);
+          headers.set('Access-Control-Allow-Origin', origin);
+          headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+          headers.set('Access-Control-Allow-Headers', 'Content-Type');
+          headers.set('Vary', 'Origin');
+          return new Response(response.body, {status:response.status,headers});
+        }
+        return response;
       }
       if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405,headers:HEADERS});
       let pathname;

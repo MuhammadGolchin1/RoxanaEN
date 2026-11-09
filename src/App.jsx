@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { currentRoute, sitePath } from "./lib/paths.js";
 import HomePage from "./pages/HomePage.jsx";
 import AssessmentPage from "./pages/AssessmentPage.jsx";
 import QuestionnairePage from "./pages/QuestionnairePage.jsx";
@@ -28,7 +29,7 @@ const information = {
   },
 };
 export default function App() {
-  const route = window.location.pathname.split("/").filter(Boolean)[0] || "";
+  const route = currentRoute();
   const title = INFORMATION_PAGES.find((page) => page.slug === route)?.title;
   useEffect(() => {
     document.title =
@@ -61,7 +62,7 @@ export default function App() {
     <SiteLayout>
       <section className="wrap information-page">
         <h1>Page not found</h1>
-        <a className="button" href="/">
+        <a className="button" href={sitePath('/')}>
           Back to home
         </a>
       </section>

@@ -1,4 +1,5 @@
 import React from "react";
+import { sitePath } from "../lib/paths.js";
 const FAQ_ITEMS = [
   {
     question: "How exactly does Roxana help with my fitness and health?",
@@ -29,7 +30,7 @@ const FAQ_ITEMS = [
         <ul>
           <li>
             <strong>
-              <a href="/assessment/">
+              <a href={sitePath('/assessment/')}>
                 Form one — BMI calculation and initial medication assessment:
               </a>
             </strong>
@@ -39,7 +40,7 @@ const FAQ_ITEMS = [
           </li>
           <li>
             <strong>
-              <a href="/questionnaire/">
+              <a href={sitePath('/questionnaire/')}>
                 Form two — lifestyle assessment and a personalized plan, get fit
                 by Nowruz:
               </a>
@@ -260,7 +261,7 @@ function AboutContent() {
         </div>
         <img
           className="about-intro__portrait"
-          src="/roxana-portrait-reference-botanical.png"
+          src={sitePath('/roxana-portrait-reference-botanical.png')}
           alt="Roxana, an AI character in turquoise sportswear with botanical details"
           width="1383"
           height="1137"
@@ -326,7 +327,7 @@ function AboutContent() {
               weight-loss options. A doctor and nutrition specialists oversee
               any further review and treatment decisions.
             </p>
-            <a className="button" href="/assessment/">
+            <a className="button" href={sitePath('/assessment/')}>
               Start weight assessment
             </a>
           </article>
@@ -337,7 +338,7 @@ function AboutContent() {
               The Roxana team can then guide you towards a personalized home or
               gym exercise program, meal plan and corrective exercises.
             </p>
-            <a className="button secondary" href="/questionnaire/">
+            <a className="button secondary" href={sitePath('/questionnaire/')}>
               Start lifestyle assessment
             </a>
           </article>
