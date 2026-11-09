@@ -27,7 +27,7 @@ function AssessmentPage() {
         measurementsFormRef.current?.elements.height.focus());
   }, [result]);
   useEffect(() => {
-    (submissionStatus === "submitted" || submissionStatus === "unknown") &&
+    (submissionStatus === "submitted" || submissionStatus === "dispatched" || submissionStatus === "unknown") &&
       confirmationHeadingRef.current?.focus();
   }, [submissionStatus]);
   function handleCalculate(n) {
@@ -75,6 +75,7 @@ function AssessmentPage() {
       sendingRef.current ||
       !result ||
       submissionStatus === "submitted" ||
+      submissionStatus === "dispatched" ||
       submissionStatus === "unknown"
     )
       return;
@@ -316,6 +317,7 @@ function AssessmentPage() {
                 </button>
                 <div className="followup">
                   {submissionStatus === "submitted" ||
+                  submissionStatus === "dispatched" ||
                   submissionStatus === "unknown" ? (
                     <section
                       id="confirmation"
@@ -326,11 +328,17 @@ function AssessmentPage() {
                         tabIndex={-1}
                         ref={confirmationHeadingRef}
                       >
-                        Your request has been sent to the Roxana team!
+                        {submissionStatus === "submitted"
+                          ? "Your request has been sent to the Roxana team!"
+                          : submissionStatus === "dispatched"
+                            ? "Your request has been sent from your browser."
+                            : "Delivery could not be confirmed."}
                       </h3>
                       <p>
                         {submissionStatus === "submitted"
                           ? " We will be in touch soon."
+                          : submissionStatus === "dispatched"
+                            ? "Delivery has not been confirmed. Please contact the Roxana team if you need to follow up."
                           : "Delivery could not be confirmed. Please contact the Roxana team before sending again."}
                       </p>
                     </section>

@@ -323,7 +323,7 @@ function QuestionnairePage() {
   const shouldFocusHeadingRef = useRef(false);
   const fieldToFocusRef = useRef(null);
   const isComplete =
-    submissionStatus === "submitted" || submissionStatus === "unknown";
+    submissionStatus === "submitted" || submissionStatus === "dispatched" || submissionStatus === "unknown";
   const isSending = submissionStatus === "sending";
   const isReview = currentSection === SECTIONS.length;
   const answeredCount = QUESTIONS.filter((t) =>
@@ -430,6 +430,7 @@ function QuestionnairePage() {
             answers: answers,
           },
           photos,
+          { onProgress: (sent, total) => setSendProgress([sent, total]) },
         ),
       );
     } catch (error) {
@@ -652,17 +653,21 @@ function QuestionnairePage() {
           {isComplete ? (
             <section className="q-completion" aria-labelledby="q-title">
               <div className="q-completion-icon" aria-hidden="true">
-                {submissionStatus === "submitted" ? "✓" : "…"}
+                {submissionStatus === "submitted" || submissionStatus === "dispatched" ? "✓" : "…"}
               </div>
               <p className="q-eyebrow">Thank you for sharing your story</p>
               <h2 id="q-title" ref={headingRef} tabIndex={-1}>
                 {submissionStatus === "submitted"
                   ? "Your questionnaire has been sent."
+                  : submissionStatus === "dispatched"
+                    ? "Your questionnaire has been sent from your browser."
                   : "Delivery could not be confirmed."}
               </h2>
               <p>
                 {submissionStatus === "submitted"
                   ? "Your answers and selected photos have been sent to the Roxana team. Keep your reference below if you need to follow up."
+                  : submissionStatus === "dispatched"
+                    ? "Your browser sent your answers and selected photos. Delivery has not been confirmed. Keep your reference below if you need to follow up."
                   : "We could not confirm delivery. Contact the Roxana team with your reference before sending again."}
               </p>
               <p className="q-reference">

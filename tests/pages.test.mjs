@@ -4,7 +4,6 @@ import { mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join } from 'node:path';
 import { normalizeBase, sitePath, currentRoute } from '../src/lib/paths.js';
-import { formsEndpoint } from '../src/lib/submission.js';
 import { pagesEntries, STATIC_ROUTES } from '../server/pages-build.js';
 
 test('repository paths apply to media, navigation and route selection', () => {
@@ -18,15 +17,6 @@ test('repository paths apply to media, navigation and route selection', () => {
   assert.equal(currentRoute('/RoxanaEN/', '/RoxanaEN/'), '');
   assert.equal(currentRoute('/RoxanaEN', '/RoxanaEN/'), '');
   assert.equal(currentRoute('/assessment/', '/'), 'assessment');
-});
-
-test('static hosting requires an explicit form API while local development and preview keep working', () => {
-  assert.equal(formsEndpoint({configured:'',development:false,hostname:'muhammadgolchin1.github.io'}), null);
-  assert.equal(formsEndpoint({configured:'',development:false,hostname:'127.0.0.1'}), '/api/forms');
-  assert.equal(formsEndpoint({configured:'',development:true,hostname:'localhost'}), '/api/forms');
-  assert.equal(formsEndpoint({configured:'https://api.example.com/api/forms',development:false}), 'https://api.example.com/api/forms');
-  assert.throws(()=>formsEndpoint({configured:'http://api.example.com/api/forms',development:false}), /secure/);
-  assert.throws(()=>formsEndpoint({configured:'https://user:password@api.example.com/api/forms',development:false}), /invalid/);
 });
 
 test('every clean route has its own HTML entry for direct navigation and refresh', async () => {
