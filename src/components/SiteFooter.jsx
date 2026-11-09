@@ -1,3 +1,4 @@
+import { useLanguage } from "../i18n/LanguageContext.jsx";
 import React from "react";
 import { sitePath } from "../lib/paths.js";
 const INFORMATION_PAGES = [
@@ -41,6 +42,7 @@ const SOCIAL_LINKS = [
   },
 ];
 function SiteFooter() {
+  const { t: tr } = useLanguage();
   return (
     <footer className="site-footer" dir="ltr">
       <svg
@@ -61,31 +63,40 @@ function SiteFooter() {
           <div className="site-footer__intro">
             <a
               className="site-footer__brand"
-              href={sitePath('/')}
-              aria-label="Roxana, home page"
+              href={sitePath("/")}
+              aria-label={tr("Roxana, home page")}
             >
-              <img src={sitePath('/roxana-logo.png')} width="64" height="64" alt="" />
+              <img
+                src={sitePath("/roxana-logo.png")}
+                width="64"
+                height="64"
+                alt=""
+              />
               <span>
-                <strong>Roxana</strong>
-                <span>Lifestyle &amp; Fitness</span>
+                <strong>{tr("Roxana")}</strong>
+                <span>{tr("Lifestyle & Fitness")}</span>
               </span>
             </a>
-            <p className="site-footer__tagline">Your well-being starts here</p>
+            <p className="site-footer__tagline">
+              {tr("Your well-being starts here")}
+            </p>
           </div>
-          <nav className="site-footer__nav" aria-label="Footer links">
-            <h2 className="site-footer__heading">Explore Roxana</h2>
+          <nav className="site-footer__nav" aria-label={tr("Footer links")}>
+            <h2 className="site-footer__heading">{tr("Explore Roxana")}</h2>
             <ul>
               {INFORMATION_PAGES.filter(({ slug: O }) => O !== "contact").map(
                 ({ slug: O, title: sl }) => (
                   <li key={O}>
-                    <a href={sitePath(`/${O}/`)}>{sl}</a>
+                    <a href={sitePath(`/${O}/`)}>{tr(sl)}</a>
                   </li>
                 ),
               )}
             </ul>
           </nav>
           <div className="site-footer__contact">
-            <h2 className="site-footer__heading">Let's stay in touch</h2>
+            <h2 className="site-footer__heading">
+              {tr("Let's stay in touch")}
+            </h2>
             <a
               className="site-footer__email"
               href="mailto:Roxanaa.lifestyle@gmail.com"
@@ -100,11 +111,11 @@ function SiteFooter() {
                 <rect x="3" y="5" width="18" height="14" rx="3" />
                 <path d="m4 7 8 6 8-6" />
               </svg>
-              <bdi>Roxanaa.lifestyle@gmail.com</bdi>
+              <bdi>{tr("Roxanaa.lifestyle@gmail.com")}</bdi>
             </a>
             <ul
               className="site-footer__socials"
-              aria-label="Roxana social media"
+              aria-label={tr("Roxana social media")}
             >
               {SOCIAL_LINKS.map(({ name: O, icon: sl, href: fl }) => (
                 <li key={sl}>
@@ -113,7 +124,9 @@ function SiteFooter() {
                     href={fl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`${O} Roxana (opens in a new tab)`}
+                    aria-label={tr("{network} Roxana (opens in a new tab)", {
+                      network: O,
+                    })}
                   >
                     <img
                       src={sitePath(`/social/${sl}`)}
@@ -130,9 +143,9 @@ function SiteFooter() {
           </div>
         </div>
         <div className="site-footer__bottom">
-          <p>© Roxana. All rights reserved.</p>
+          <p>{tr("© Roxana. All rights reserved.")}</p>
           <a href="#top">
-            {"Back to top "}
+            {tr("Back to top ")}
             <span aria-hidden="true">↑</span>
           </a>
         </div>

@@ -1,6 +1,6 @@
 # Roxana Lifestyle — local React project
 
-An English, left-to-right React recreation of **roxanalifestyle.ir**, retaining the original layout, colors, video, logo, illustrations, animation and mobile breakpoints.
+A bilingual English/French, left-to-right React recreation of **roxanalifestyle.ir**, retaining the original layout, colors, video, logo, illustrations, animation and mobile breakpoints.
 
 ## Run
 
@@ -31,6 +31,7 @@ src/
   pages/            Home, BMI assessment, questionnaire and information pages
   lib/              BMI validation and form submission
   config/bale.json  Public frontend Bale token and destination IDs
+  i18n/             French translations and saved language preference
   styles/           Original styles and English/LTR adaptations
 public/             Local logo, video, images and fonts
 server/pages-build.js  Static HTML entries for GitHub Pages
@@ -39,6 +40,12 @@ tests/              Form, calculation, browser transport and routing tests
 ```
 
 There is one React root, actual editable JSX components, and normal `react` / `react-dom` dependencies. No copied React runtime is used. All visuals load from local files.
+
+## Languages
+
+Use the **FR / EN** button in the header to switch between English and French on every page, including the questionnaire. English is the default; the selected language is saved in the browser for subsequent visits and navigation. Switching languages updates page copy, field labels, placeholders, errors, results, accessibility labels, document title and page description without resetting form answers or selected photos. French BMI results use a decimal comma.
+
+The French dictionary is `src/i18n/fr.json`; the English text serves as its keys. Form choices retain their original internal values so validation and direct Bale submission keep working while their labels change language. Outgoing Bale message labels remain English, and free-text answers are sent exactly as entered.
 
 ## Forms
 

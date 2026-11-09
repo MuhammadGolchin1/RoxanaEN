@@ -1,3 +1,4 @@
+import { useLanguage } from "../i18n/LanguageContext.jsx";
 import React, { useState, useRef, useEffect } from "react";
 import SiteLayout from "../components/SiteLayout.jsx";
 import {
@@ -7,6 +8,7 @@ import {
 } from "../lib/assessment.js";
 import { sendSubmission } from "../lib/submission.js";
 function AssessmentPage() {
+  const { t: tr, formatBmi } = useLanguage();
   const [result, setResult] = useState(null);
   const [measurementErrors, setMeasurementErrors] = useState({});
   const [showOtherCondition, setShowOtherCondition] = useState(false);
@@ -27,7 +29,9 @@ function AssessmentPage() {
         measurementsFormRef.current?.elements.height.focus());
   }, [result]);
   useEffect(() => {
-    (submissionStatus === "submitted" || submissionStatus === "dispatched" || submissionStatus === "unknown") &&
+    (submissionStatus === "submitted" ||
+      submissionStatus === "dispatched" ||
+      submissionStatus === "unknown") &&
       confirmationHeadingRef.current?.focus();
   }, [submissionStatus]);
   function handleCalculate(n) {
@@ -139,35 +143,37 @@ function AssessmentPage() {
       >
         <div className="wrap assessment-grid">
           <div className="assessment-aside">
-            <p className="eyebrow">Initial assessment · BMI calculator</p>
+            <p className="eyebrow">
+              {tr("Initial assessment · BMI calculator")}
+            </p>
             <h1 id="assessment-title">
-              Is my BMI in the range for weight-loss injections?
+              {tr("Is my BMI in the range for weight-loss injections?")}
             </h1>
             <p>
-              Enter your height and weight and, if you wish, tell us about any
-              health conditions. Your result is based on your body mass index
-              (BMI).
+              {tr(
+                "Enter your height and weight and, if you wish, tell us about any health conditions. Your result is based on your body mass index (BMI).",
+              )}
             </p>
-            <ol className="steps" aria-label="Assessment steps">
+            <ol className="steps" aria-label={tr("Assessment steps")}>
               <li aria-current={result ? undefined : "step"}>
                 <span aria-hidden="true">1</span>
-                {" Your details"}
+                {tr(" Your details")}
               </li>
               <li aria-current={result ? "step" : undefined}>
                 <span aria-hidden="true">2</span>
-                {" Your result and follow-up"}
+                {tr(" Your result and follow-up")}
               </li>
             </ol>
             <p className="clinical-note">
-              {
-                "BMI is one assessment factor. A doctor will also review your health history and circumstances before deciding about medication. "
-              }
+              {tr(
+                "BMI is one assessment factor. A doctor will also review your health history and circumstances before deciding about medication. ",
+              )}
               <a
                 href="https://www.niddk.nih.gov/health-information/weight-management/prescription-medications-treat-overweight-obesity"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Medical source
+                {tr("Medical source")}
               </a>
             </p>
           </div>
@@ -182,7 +188,7 @@ function AssessmentPage() {
               <div className="field-grid">
                 <div className="field">
                   <label className="label" htmlFor="height">
-                    Height
+                    {tr("Height")}
                   </label>
                   <div className="input-wrap">
                     <input
@@ -197,7 +203,7 @@ function AssessmentPage() {
                       aria-describedby="height-error"
                     />
                     <span className="unit" aria-hidden="true">
-                      cm
+                      {tr("cm")}
                     </span>
                   </div>
                   <p
@@ -205,12 +211,12 @@ function AssessmentPage() {
                     id="height-error"
                     hidden={!measurementErrors.height}
                   >
-                    {measurementErrors.height}
+                    {tr(measurementErrors.height)}
                   </p>
                 </div>
                 <div className="field">
                   <label className="label" htmlFor="weight">
-                    Weight
+                    {tr("Weight")}
                   </label>
                   <div className="input-wrap">
                     <input
@@ -218,14 +224,14 @@ function AssessmentPage() {
                       id="weight"
                       name="weight"
                       inputMode="decimal"
-                      placeholder="84.5"
+                      placeholder={tr("84.5")}
                       required={true}
                       maxLength={12}
                       aria-invalid={!!measurementErrors.weight}
                       aria-describedby="weight-error"
                     />
                     <span className="unit" aria-hidden="true">
-                      kg
+                      {tr("kg")}
                     </span>
                   </div>
                   <p
@@ -233,19 +239,19 @@ function AssessmentPage() {
                     id="weight-error"
                     hidden={!measurementErrors.weight}
                   >
-                    {measurementErrors.weight}
+                    {tr(measurementErrors.weight)}
                   </p>
                 </div>
               </div>
               <fieldset>
                 <legend>
-                  {"Health conditions "}
-                  <span className="optional">(optional)</span>
+                  {tr("Health conditions ")}
+                  <span className="optional">{tr("(optional)")}</span>
                 </legend>
                 <div className="choices">
                   {HEALTH_OPTIONS.map((n) => (
                     <label className="choice" key={n}>
-                      <input type="checkbox" name="health" value={n} /> {n}
+                      <input type="checkbox" name="health" value={n} /> {tr(n)}
                     </label>
                   ))}
                   <label className="choice">
@@ -256,54 +262,60 @@ function AssessmentPage() {
                       checked={showOtherCondition}
                       onChange={(n) => setShowOtherCondition(n.target.checked)}
                     />
-                    {" Other"}
+                    {tr(" Other")}
                   </label>
                 </div>
                 {showOtherCondition && (
                   <div className="field health-note">
                     <label className="label" htmlFor="health-detail">
-                      {"Other "}
-                      <span className="optional">(optional)</span>
+                      {tr("Other ")}
+                      <span className="optional">{tr("(optional)")}</span>
                     </label>
                     <textarea
                       id="health-detail"
                       name="healthDetail"
                       maxLength={250}
                       rows={2}
-                      placeholder="Add a brief note if you would like."
+                      placeholder={tr("Add a brief note if you would like.")}
                     />
                   </div>
                 )}
               </fieldset>
               <div className="form-actions">
                 <button className="button" type="submit">
-                  Calculate and see my result
+                  {tr("Calculate and see my result")}
                 </button>
               </div>
             </form>
             {result && (
               <section aria-labelledby="result-title">
                 <h3 id="result-title" tabIndex={-1} ref={resultHeadingRef}>
-                  Your initial assessment
+                  {tr("Your initial assessment")}
                 </h3>
                 <div className="result-box" data-pass={String(result.inRange)}>
                   <div className="result-metric">
-                    {"Your body mass index "}
+                    {tr("Your body mass index ")}
                     <strong
                       className={result.bmi > 30 ? "bmi-high" : undefined}
                     >
-                      {result.display}
+                      {formatBmi(result)}
                     </strong>
                   </div>
                   <p id="result-message">
                     {result.inRange
-                      ? "Your BMI meets the threshold for an initial assessment for weight-loss injections."
-                      : "With a BMI below 30, you are outside this initial assessment range for weight-loss injections."}
+                      ? tr(
+                          "Your BMI meets the threshold for an initial assessment for weight-loss injections.",
+                        )
+                      : tr(
+                          "With a BMI below 30, you are outside this initial assessment range for weight-loss injections.",
+                        )}
                   </p>
-                  <p id="result-context">{resultContext}</p>
+                  <p id="result-context">{tr(resultContext)}</p>
                   {result.hasHealthContext && (
                     <p id="health-context">
-                      Tell your doctor about the health conditions you selected.
+                      {tr(
+                        "Tell your doctor about the health conditions you selected.",
+                      )}
                     </p>
                   )}
                 </div>
@@ -313,7 +325,7 @@ function AssessmentPage() {
                   onClick={handleEdit}
                   disabled={isSending}
                 >
-                  Edit height, weight or health details
+                  {tr("Edit height, weight or health details")}
                 </button>
                 <div className="followup">
                   {submissionStatus === "submitted" ||
@@ -329,17 +341,23 @@ function AssessmentPage() {
                         ref={confirmationHeadingRef}
                       >
                         {submissionStatus === "submitted"
-                          ? "Your request has been sent to the Roxana team!"
+                          ? tr("Your request has been sent to the Roxana team!")
                           : submissionStatus === "dispatched"
-                            ? "Your request has been sent from your browser."
-                            : "Delivery could not be confirmed."}
+                            ? tr(
+                                "Your request has been sent from your browser.",
+                              )
+                            : tr("Delivery could not be confirmed.")}
                       </h3>
                       <p>
                         {submissionStatus === "submitted"
-                          ? " We will be in touch soon."
+                          ? tr(" We will be in touch soon.")
                           : submissionStatus === "dispatched"
-                            ? "Delivery has not been confirmed. Please contact the Roxana team if you need to follow up."
-                          : "Delivery could not be confirmed. Please contact the Roxana team before sending again."}
+                            ? tr(
+                                "Delivery has not been confirmed. Please contact the Roxana team if you need to follow up.",
+                              )
+                            : tr(
+                                "Delivery could not be confirmed. Please contact the Roxana team before sending again.",
+                              )}
                       </p>
                     </section>
                   ) : (
@@ -350,24 +368,28 @@ function AssessmentPage() {
                     >
                       <h3>
                         {result.inRange
-                          ? "Want to lose weight with expert support?"
-                          : "Would you like to talk to the Roxana team?"}
+                          ? tr("Want to lose weight with expert support?")
+                          : tr("Would you like to talk to the Roxana team?")}
                       </h3>
                       <p className="form-intro">
                         {result.inRange
-                          ? "Enter your name and preferred contact details so the Roxana team can arrange a consultation."
-                          : "If you would like to talk to the Roxana team, leave your name and one way to reach you."}
+                          ? tr(
+                              "Enter your name and preferred contact details so the Roxana team can arrange a consultation.",
+                            )
+                          : tr(
+                              "If you would like to talk to the Roxana team, leave your name and one way to reach you.",
+                            )}
                       </p>
                       <div className="field">
                         <label className="label" htmlFor="contact-name">
-                          Name
+                          {tr("Name")}
                         </label>
                         <input
                           className="input"
                           id="contact-name"
                           name="name"
                           autoComplete="name"
-                          placeholder="Your name"
+                          placeholder={tr("Your name")}
                           required={true}
                           maxLength={80}
                           disabled={isSending}
@@ -379,11 +401,11 @@ function AssessmentPage() {
                           id="contact-name-error"
                           hidden={!contactErrors.name}
                         >
-                          {contactErrors.name}
+                          {tr(contactErrors.name)}
                         </p>
                       </div>
                       <fieldset disabled={isSending}>
-                        <legend>Preferred contact method</legend>
+                        <legend>{tr("Preferred contact method")}</legend>
                         <div className="choices">
                           <label className="choice">
                             <input
@@ -396,7 +418,7 @@ function AssessmentPage() {
                                 setContactErrors({});
                               }}
                             />
-                            {" Mobile number"}
+                            {tr(" Mobile number")}
                           </label>
                           <label className="choice">
                             <input
@@ -409,15 +431,15 @@ function AssessmentPage() {
                                 setContactErrors({});
                               }}
                             />
-                            {" Instagram username"}
+                            {tr(" Instagram username")}
                           </label>
                         </div>
                       </fieldset>
                       <div className="field contact-field">
                         <label className="label" htmlFor="contact-value">
                           {isPhoneChannel
-                            ? "Mobile number"
-                            : "Instagram username"}
+                            ? tr("Mobile number")
+                            : tr("Instagram username")}
                         </label>
                         <input
                           className="input"
@@ -430,7 +452,9 @@ function AssessmentPage() {
                           type={isPhoneChannel ? "tel" : "text"}
                           autoComplete={isPhoneChannel ? "tel" : "off"}
                           placeholder={
-                            isPhoneChannel ? "0912 345 6789" : "@username"
+                            isPhoneChannel
+                              ? tr("0912 345 6789")
+                              : tr("@username")
                           }
                           disabled={isSending}
                           aria-invalid={!!contactErrors.contact}
@@ -441,7 +465,7 @@ function AssessmentPage() {
                           id="contact-value-error"
                           hidden={!contactErrors.contact}
                         >
-                          {contactErrors.contact}
+                          {tr(contactErrors.contact)}
                         </p>
                       </div>
                       <div className="form-actions">
@@ -450,12 +474,12 @@ function AssessmentPage() {
                           type="submit"
                           disabled={isSending}
                         >
-                          {isSending ? "Sending…" : "Request a call"}
+                          {isSending ? tr("Sending…") : tr("Request a call")}
                         </button>
                       </div>
                       {submitError && (
                         <p className="field-error submit-error" role="alert">
-                          {submitError}
+                          {tr(submitError)}
                         </p>
                       )}
                     </form>

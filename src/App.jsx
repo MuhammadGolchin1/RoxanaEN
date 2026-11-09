@@ -1,3 +1,4 @@
+import { useLanguage } from "./i18n/LanguageContext.jsx";
 import { useEffect } from "react";
 import { currentRoute, sitePath } from "./lib/paths.js";
 import HomePage from "./pages/HomePage.jsx";
@@ -29,18 +30,19 @@ const information = {
   },
 };
 export default function App() {
+  const { t: tr } = useLanguage();
   const route = currentRoute();
   const title = INFORMATION_PAGES.find((page) => page.slug === route)?.title;
   useEffect(() => {
     document.title =
       route === "assessment"
-        ? "Weight Assessment | Roxana"
+        ? tr("Weight Assessment | Roxana")
         : route === "questionnaire"
-          ? "Getting Started Questionnaire | Roxana"
+          ? tr("Getting Started Questionnaire | Roxana")
           : title
-            ? `${title} | Roxana`
-            : "Roxana | Lifestyle & Fitness";
-  }, [route, title]);
+            ? `${tr(title)} | Roxana`
+            : tr("Roxana | Lifestyle & Fitness");
+  }, [route, title, tr]);
   if (!route) return <HomePage />;
   if (route === "assessment") return <AssessmentPage />;
   if (route === "questionnaire") return <QuestionnairePage />;
@@ -52,7 +54,7 @@ export default function App() {
           className={`wrap information-page ${className}`}
           aria-labelledby="information-title"
         >
-          <h1 id="information-title">{title}</h1>
+          <h1 id="information-title">{tr(title)}</h1>
           <Content />
         </section>
       </SiteLayout>
@@ -61,9 +63,9 @@ export default function App() {
   return (
     <SiteLayout>
       <section className="wrap information-page">
-        <h1>Page not found</h1>
-        <a className="button" href={sitePath('/')}>
-          Back to home
+        <h1>{tr("Page not found")}</h1>
+        <a className="button" href={sitePath("/")}>
+          {tr("Back to home")}
         </a>
       </section>
     </SiteLayout>

@@ -1,3 +1,4 @@
+import { useLanguage } from "../i18n/LanguageContext.jsx";
 import React, { useState, useEffect } from "react";
 import { sitePath } from "../lib/paths.js";
 import SiteLayout from "../components/SiteLayout.jsx";
@@ -6,7 +7,7 @@ function HeroVideo() {
   const [loadVideo, setLoadVideo] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
-  const poster = sitePath('/roxana-hero-poster.webp');
+  const poster = sitePath("/roxana-hero-poster.webp");
   useEffect(() => {
     if (!posterLoaded) return;
     const s = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -45,7 +46,7 @@ function HeroVideo() {
         />
         {loadVideo && !videoFailed && (
           <video
-            src={sitePath('/roxana-hero-background.mp4')}
+            src={sitePath("/roxana-hero-background.mp4")}
             poster={poster}
             width="1920"
             height="1080"
@@ -67,19 +68,19 @@ function HeroVideo() {
   );
 }
 function HomeContent() {
+  const { t: tr } = useLanguage();
   return (
     <SiteLayout home={true}>
       <section className="hero hero--video" aria-labelledby="hero-title">
         <HeroVideo />
         <div className="wrap">
           <div className="hero-copy">
-            <p className="eyebrow">Roxana · Lifestyle &amp; Fitness</p>
-            <h1 id="hero-title">Live a better version of yourself!</h1>
+            <p className="eyebrow">{tr("Roxana · Lifestyle & Fitness")}</p>
+            <h1 id="hero-title">{tr("Live a better version of yourself!")}</h1>
             <p>
-              On Roxana's Instagram, discover short home workouts, simple
-              healthy meals and corrective exercises. Want to know whether your
-              BMI is in the initial assessment range for weight-loss injections?
-              Start with our assessment.
+              {tr(
+                "On Roxana's Instagram, discover short home workouts, simple healthy meals and corrective exercises. Want to know whether your BMI is in the initial assessment range for weight-loss injections? Start with our assessment.",
+              )}
             </p>
           </div>
         </div>
@@ -87,8 +88,8 @@ function HomeContent() {
       <section className="topics" id="about" aria-labelledby="about-title">
         <div className="wrap">
           <div className="section-heading">
-            <p className="eyebrow">Discover Roxana</p>
-            <h2 id="about-title">What will you find at Roxana?</h2>
+            <p className="eyebrow">{tr("Discover Roxana")}</p>
+            <h2 id="about-title">{tr("What will you find at Roxana?")}</h2>
           </div>
           <div className="topic-grid">
             <article className="topic">
@@ -105,10 +106,11 @@ function HomeContent() {
                 </svg>
               </span>
               <div>
-                <h3>Simple, healthy meals</h3>
+                <h3>{tr("Simple, healthy meals")}</h3>
                 <p>
-                  From protein-packed breakfasts to satisfying snacks, made with
-                  ingredients that are easy to find.
+                  {tr(
+                    "From protein-packed breakfasts to satisfying snacks, made with ingredients that are easy to find.",
+                  )}
                 </p>
               </div>
             </article>
@@ -126,10 +128,11 @@ function HomeContent() {
                 </svg>
               </span>
               <div>
-                <h3>Home workouts &amp; challenges</h3>
+                <h3>{tr("Home workouts & challenges")}</h3>
                 <p>
-                  Short workouts and follow-along videos for the days you don't
-                  have time to get to the gym.
+                  {tr(
+                    "Short workouts and follow-along videos for the days you don't have time to get to the gym.",
+                  )}
                 </p>
               </div>
             </article>
@@ -148,10 +151,11 @@ function HomeContent() {
                 </svg>
               </span>
               <div>
-                <h3>Corrective exercises</h3>
+                <h3>{tr("Corrective exercises")}</h3>
                 <p>
-                  Movement and posture guidance, with a focus on lower-back
-                  posture, rounded shoulders and joint health.
+                  {tr(
+                    "Movement and posture guidance, with a focus on lower-back posture, rounded shoulders and joint health.",
+                  )}
                 </p>
               </div>
             </article>
@@ -163,11 +167,11 @@ function HomeContent() {
         id="start"
         aria-labelledby="services-title"
       >
-        <h2 id="services-title">Where should I start?</h2>
+        <h2 id="services-title">{tr("Where should I start?")}</h2>
         <div className="service-grid">
           <a
             className="service-card"
-            href={sitePath('/assessment/')}
+            href={sitePath("/assessment/")}
             aria-labelledby="assessment-link-title"
           >
             <span className="service-icon" aria-hidden="true">
@@ -185,18 +189,18 @@ function HomeContent() {
             </span>
             <div>
               <h3 id="assessment-link-title">
-                Weight-loss injection assessment
+                {tr("Weight-loss injection assessment")}
               </h3>
               <p>
-                Enter your height and weight to calculate your BMI and take an
-                initial assessment for weight-loss injections, with guidance
-                from doctors and specialists.
+                {tr(
+                  "Enter your height and weight to calculate your BMI and take an initial assessment for weight-loss injections, with guidance from doctors and specialists.",
+                )}
               </p>
             </div>
           </a>
           <a
             className="service-card"
-            href={sitePath('/questionnaire/')}
+            href={sitePath("/questionnaire/")}
             aria-labelledby="coaching-link-title"
           >
             <span className="service-icon" aria-hidden="true">
@@ -213,10 +217,11 @@ function HomeContent() {
               </svg>
             </span>
             <div>
-              <h3 id="coaching-link-title">Get fit by Nowruz!</h3>
+              <h3 id="coaching-link-title">{tr("Get fit by Nowruz!")}</h3>
               <p>
-                Tell us about your health, nutrition and activity so the Roxana
-                team can get to know you and help you take your first steps.
+                {tr(
+                  "Tell us about your health, nutrition and activity so the Roxana team can get to know you and help you take your first steps.",
+                )}
               </p>
             </div>
           </a>
@@ -227,6 +232,7 @@ function HomeContent() {
 }
 const WELCOME_DURATION = 2e3;
 function WelcomeScreen({ children: children }) {
+  const { t: tr } = useLanguage();
   const [visible, setVisible] = useState(true);
   useEffect(() => {
     if (!visible) return;
@@ -257,11 +263,15 @@ function WelcomeScreen({ children: children }) {
                 viewBox="192 64 912 1176"
                 fill="none"
               >
-                <image href={sitePath('/roxana-logo.png')} width="1254" height="1254" />
+                <image
+                  href={sitePath("/roxana-logo.png")}
+                  width="1254"
+                  height="1254"
+                />
               </svg>
             </div>
             <p className="welcome-screen__message">
-              Your well-being starts here
+              {tr("Your well-being starts here")}
             </p>
             <span className="welcome-screen__dots" aria-hidden="true">
               <span />

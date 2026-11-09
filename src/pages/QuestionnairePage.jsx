@@ -1,6 +1,8 @@
+import { useLanguage } from "../i18n/LanguageContext.jsx";
 import React, { useState, useEffect, useRef } from "react";
 import { sitePath } from "../lib/paths.js";
 import SiteFooter from "../components/SiteFooter.jsx";
+import LanguageSwitch from "../components/LanguageSwitch.jsx";
 import { parseMeasurement, validateContact } from "../lib/assessment.js";
 import { sendSubmission } from "../lib/submission.js";
 const SECTIONS = [
@@ -236,15 +238,20 @@ function validatePhoto(a) {
       : "Choose a JPG or PNG image."
     : "";
 }
-function formatAnswer(a, s, l) {
+function formatAnswer(a, s, l, tr) {
   if (a.id === "photos") {
-    const r = PHOTO_VIEWS.filter((n) => l[n.id]).map((n) => n.label);
+    const r = PHOTO_VIEWS.filter((n) => l[n.id]).map((n) => tr(n.label));
     return [
-      s.photos || "Not answered",
-      r.length ? `Attached photos: ${r.join(", ")}` : "No photos attached",
+      tr(s.photos || "Not answered"),
+      r.length
+        ? tr("Attached photos: {views}", {
+            views: r.join(", "),
+          })
+        : tr("No photos attached"),
     ].join(" · ");
   }
-  return String(s[a.id] || "").trim();
+  const value = String(s[a.id] || "").trim();
+  return a.type === "choice" ? tr(value) : value;
 }
 const formatNumber = (a) =>
   new Intl.NumberFormat("en-US", {
@@ -265,29 +272,31 @@ function ArrowIcon({ back: a = false }) {
   );
 }
 function PhotoPreview({ file: a }) {
+  const { t: tr } = useLanguage();
   const [s, l] = useState("");
   useEffect(() => {
     const r = URL.createObjectURL(a);
     l(r);
     return () => URL.revokeObjectURL(r);
   }, [a]);
-  return s ? <img src={s} alt="Preview of your selected photo" /> : null;
+  return s ? <img src={s} alt={tr("Preview of your selected photo")} /> : null;
 }
 function AnswerReview({ answers: a, photos: s, onEdit: l }) {
+  const { t: tr } = useLanguage();
   return (
     <div className="q-review">
       {SECTIONS.map((r, n) => (
         <section className="q-review-section" key={r.short}>
           <div className="q-review-heading">
-            <h3>{r.title}</h3>
+            <h3>{tr(r.title)}</h3>
             {l && (
               <button
                 type="button"
                 className="q-text-button"
                 onClick={() => l(n)}
               >
-                {"Edit "}
-                <span className="q-sr-only">{r.short}</span>
+                {tr("Edit ")}
+                <span className="q-sr-only">{tr(r.short)}</span>
               </button>
             )}
           </div>
@@ -297,9 +306,9 @@ function AnswerReview({ answers: a, photos: s, onEdit: l }) {
                 <dt>
                   {formatNumber(m.number)}
                   {". "}
-                  {m.label}
+                  {tr(m.label)}
                 </dt>
-                <dd dir="auto">{formatAnswer(m, a, s)}</dd>
+                <dd dir="auto">{formatAnswer(m, a, s, tr)}</dd>
               </div>
             ))}
           </dl>
@@ -309,6 +318,7 @@ function AnswerReview({ answers: a, photos: s, onEdit: l }) {
   );
 }
 function QuestionnairePage() {
+  const { t: tr } = useLanguage();
   const [answers, setAnswers] = useState({});
   const [photos, setPhotos] = useState({});
   const [photoErrors, setPhotoErrors] = useState({});
@@ -323,7 +333,9 @@ function QuestionnairePage() {
   const shouldFocusHeadingRef = useRef(false);
   const fieldToFocusRef = useRef(null);
   const isComplete =
-    submissionStatus === "submitted" || submissionStatus === "dispatched" || submissionStatus === "unknown";
+    submissionStatus === "submitted" ||
+    submissionStatus === "dispatched" ||
+    submissionStatus === "unknown";
   const isSending = submissionStatus === "sending";
   const isReview = currentSection === SECTIONS.length;
   const answeredCount = QUESTIONS.filter((t) =>
@@ -430,7 +442,9 @@ function QuestionnairePage() {
             answers: answers,
           },
           photos,
-          { onProgress: (sent, total) => setSendProgress([sent, total]) },
+          {
+            onProgress: (sent, total) => setSendProgress([sent, total]),
+          },
         ),
       );
     } catch (error) {
@@ -452,7 +466,7 @@ function QuestionnairePage() {
         <span className="q-number">
           {formatNumber(t.number).padStart(2, "0")}
         </span>
-        <span>{t.label}</span>
+        <span>{tr(t.label)}</span>
       </React.Fragment>
     );
     const k = {
@@ -487,14 +501,16 @@ function QuestionnairePage() {
                     required={!t.optional}
                     onChange={() => updateAnswer(t.id, i)}
                   />
-                  <span>{i}</span>
+                  <span>{tr(i)}</span>
                 </label>
               ))}
             </div>
             {t.type === "photos" && u === t.options[0] && (
               <div className="q-photo-area">
                 <p className="q-hint">
-                  Add whichever photos you wish: JPG or PNG, up to 5 MB each.
+                  {tr(
+                    "Add whichever photos you wish: JPG or PNG, up to 5 MB each.",
+                  )}
                 </p>
                 <div className="q-photos">
                   {PHOTO_VIEWS.map((i) => (
@@ -503,7 +519,7 @@ function QuestionnairePage() {
                         className="q-photo-label"
                         htmlFor={`photo-${i.id}`}
                       >
-                        {i.label} <span>(optional)</span>
+                        {tr(i.label)} <span>{tr("(optional)")}</span>
                       </label>
                       {photos[i.id] && <PhotoPreview file={photos[i.id]} />}
                       <input
@@ -538,8 +554,8 @@ function QuestionnairePage() {
                                 "";
                             }}
                           >
-                            {"Remove photo "}
-                            <span className="q-sr-only">{i.label}</span>
+                            {tr("Remove photo ")}
+                            <span className="q-sr-only">{tr(i.label)}</span>
                           </button>
                         </React.Fragment>
                       )}
@@ -548,7 +564,7 @@ function QuestionnairePage() {
                         id={`photo-${i.id}-error`}
                         role={photoErrors[i.id] ? "alert" : undefined}
                       >
-                        {photoErrors[i.id]}
+                        {tr(photoErrors[i.id])}
                       </p>
                     </div>
                   ))}
@@ -565,7 +581,7 @@ function QuestionnairePage() {
               <textarea
                 {...k}
                 rows={3}
-                placeholder="Write your answer here…"
+                placeholder={tr("Write your answer here…")}
                 dir="auto"
               />
             ) : (
@@ -581,19 +597,19 @@ function QuestionnairePage() {
                       : "text"
                   }
                   autoComplete={t.autoComplete || "off"}
-                  placeholder={t.placeholder}
+                  placeholder={tr(t.placeholder)}
                   dir={t.id === "contact" ? "ltr" : "ltr"}
                 />
-                {t.unit && <span className="q-unit">{t.unit}</span>}
+                {tr(t.unit) && <span className="q-unit">{tr(t.unit)}</span>}
               </div>
             )}
           </React.Fragment>
         )}
         <p className="q-hint" id={`${c}-hint`}>
-          {t.hint}
+          {tr(t.hint)}
         </p>
         <p className="q-error" id={`${c}-error`}>
-          {errors[t.id]}
+          {tr(errors[t.id])}
         </p>
       </div>
     );
@@ -601,119 +617,144 @@ function QuestionnairePage() {
   return (
     <div className="q-page">
       <a className="q-skip" href="#questionnaire">
-        Skip to questionnaire
+        {tr("Skip to questionnaire")}
       </a>
       <header className="q-header">
         <div className="q-container q-header-inner">
-          <a className="q-brand" href={sitePath('/')} aria-label="Roxana home">
-            <img src={sitePath('/roxana-logo.png')} alt="" />
+          <a
+            className="q-brand"
+            href={sitePath("/")}
+            aria-label={tr("Roxana home")}
+          >
+            <img src={sitePath("/roxana-logo.png")} alt="" />
             <span>
-              Roxana<small>By your side, for a better you</small>
+              {tr("Roxana")}
+              <small>{tr("By your side, for a better you")}</small>
             </span>
           </a>
-          <span className="q-header-label">Getting started questionnaire</span>
+          <div className="q-header-controls">
+            <span className="q-header-label">
+              {tr("Getting started questionnaire")}
+            </span>
+            <LanguageSwitch />
+          </div>
         </div>
       </header>
       <main className="q-container q-layout" id="questionnaire">
         <aside className="q-aside">
           <p className="q-eyebrow">
             <span />
-            {" A fresh start, just for you"}
+            {tr(" A fresh start, just for you")}
           </p>
           <h1>
-            Your plan
+            {tr("Your plan")}
             <br />
-            {" starts with "}
-            <em>knowing you.</em>
+            {tr(" starts with ")}
+            <em>{tr("knowing you.")}</em>
             <br className="q-desktop-break" />
             {""}
           </h1>
           <p className="q-lead">
-            Take a few minutes for yourself. Tell us about your goals, your body
-            and your habits so we can start your journey with a better
-            understanding of you.
+            {tr(
+              "Take a few minutes for yourself. Tell us about your goals, your body and your habits so we can start your journey with a better understanding of you.",
+            )}
           </p>
           <div className="q-aside-note">
             <span className="q-note-icon" dir="ltr" aria-hidden="true">
               {"}"}
             </span>
             <p>
-              There are no right or wrong answers;
+              {tr("There are no right or wrong answers;")}
               <br />
-              just be yourself and write freely.
+              {tr("just be yourself and write freely.")}
             </p>
           </div>
           <div className="q-meta">
-            <span>23 questions</span>
-            <span>Only the first section is required</span>
+            <span>{tr("23 questions")}</span>
+            <span>{tr("Only the first section is required")}</span>
           </div>
-          <p className="q-aside-footer">Small steps. Lasting change.</p>
+          <p className="q-aside-footer">{tr("Small steps. Lasting change.")}</p>
         </aside>
         <div className="q-panel">
           {isComplete ? (
             <section className="q-completion" aria-labelledby="q-title">
               <div className="q-completion-icon" aria-hidden="true">
-                {submissionStatus === "submitted" || submissionStatus === "dispatched" ? "✓" : "…"}
+                {submissionStatus === "submitted" ||
+                submissionStatus === "dispatched"
+                  ? "✓"
+                  : "…"}
               </div>
-              <p className="q-eyebrow">Thank you for sharing your story</p>
+              <p className="q-eyebrow">
+                {tr("Thank you for sharing your story")}
+              </p>
               <h2 id="q-title" ref={headingRef} tabIndex={-1}>
                 {submissionStatus === "submitted"
-                  ? "Your questionnaire has been sent."
+                  ? tr("Your questionnaire has been sent.")
                   : submissionStatus === "dispatched"
-                    ? "Your questionnaire has been sent from your browser."
-                  : "Delivery could not be confirmed."}
+                    ? tr("Your questionnaire has been sent from your browser.")
+                    : tr("Delivery could not be confirmed.")}
               </h2>
               <p>
                 {submissionStatus === "submitted"
-                  ? "Your answers and selected photos have been sent to the Roxana team. Keep your reference below if you need to follow up."
+                  ? tr(
+                      "Your answers and selected photos have been sent to the Roxana team. Keep your reference below if you need to follow up.",
+                    )
                   : submissionStatus === "dispatched"
-                    ? "Your browser sent your answers and selected photos. Delivery has not been confirmed. Keep your reference below if you need to follow up."
-                  : "We could not confirm delivery. Contact the Roxana team with your reference before sending again."}
+                    ? tr(
+                        "Your browser sent your answers and selected photos. Delivery has not been confirmed. Keep your reference below if you need to follow up.",
+                      )
+                    : tr(
+                        "We could not confirm delivery. Contact the Roxana team with your reference before sending again.",
+                      )}
               </p>
               <p className="q-reference">
-                {"Your reference: "}
+                {tr("Your reference: ")}
                 <bdi>{reference}</bdi>
               </p>
               <details className="q-sent-answers">
-                <summary>View my answers</summary>
+                <summary>{tr("View my answers")}</summary>
                 <AnswerReview answers={answers} photos={photos} />
               </details>
             </section>
           ) : (
             <React.Fragment>
-              <nav className="q-stepper" aria-label="Questionnaire steps">
+              <nav className="q-stepper" aria-label={tr("Questionnaire steps")}>
                 <ol>
-                  {[...SECTIONS.map((t) => t.short), "Review & send"].map(
-                    (t, c) => (
-                      <li
-                        key={t}
-                        aria-current={currentSection === c ? "step" : undefined}
-                        data-done={currentSection > c}
-                      >
-                        <span className="q-step-dot" aria-hidden="true">
-                          {currentSection > c ? "✓" : formatNumber(c + 1)}
-                        </span>
-                        <span>{t}</span>
-                      </li>
-                    ),
-                  )}
+                  {[
+                    ...SECTIONS.map((t) => tr(t.short)),
+                    tr("Review & send"),
+                  ].map((t, c) => (
+                    <li
+                      key={t}
+                      aria-current={currentSection === c ? "step" : undefined}
+                      data-done={currentSection > c}
+                    >
+                      <span className="q-step-dot" aria-hidden="true">
+                        {currentSection > c ? "✓" : formatNumber(c + 1)}
+                      </span>
+                      <span>{tr(t)}</span>
+                    </li>
+                  ))}
                 </ol>
               </nav>
               <div className="q-progress-row">
                 <span>
                   {isReview
-                    ? "One last look before you send"
-                    : `Step ${formatNumber(currentSection + 1)} of 4`}
+                    ? tr("One last look before you send")
+                    : tr("Step {step} of 4", {
+                        step: formatNumber(currentSection + 1),
+                      })}
                 </span>
                 <span>
-                  {formatNumber(answeredCount)}
-                  {" of 23 answered"}
+                  {tr("{count} of 23 answered", {
+                    count: formatNumber(answeredCount),
+                  })}
                 </span>
               </div>
               <div
                 className="q-progress"
                 role="progressbar"
-                aria-label="Questions answered"
+                aria-label={tr("Questions answered")}
                 aria-valuemin={0}
                 aria-valuemax={23}
                 aria-valuenow={answeredCount}
@@ -727,16 +768,20 @@ function QuestionnairePage() {
               <div className="q-section-intro">
                 <h2 id="q-title" ref={headingRef} tabIndex={-1}>
                   {isReview
-                    ? "Does everything look right?"
-                    : SECTIONS[currentSection].title}
+                    ? tr("Does everything look right?")
+                    : tr(SECTIONS[currentSection].title)}
                 </h2>
                 <p>
                   {isReview
-                    ? "Review your answers. You can go back and edit any section."
-                    : SECTIONS[currentSection].description}
+                    ? tr(
+                        "Review your answers. You can go back and edit any section.",
+                      )
+                    : tr(SECTIONS[currentSection].description)}
                   {!isReview &&
                     currentSection > 0 &&
-                    " All questions in this section are optional; you can leave them blank and continue."}
+                    tr(
+                      " All questions in this section are optional; you can leave them blank and continue.",
+                    )}
                 </p>
               </div>
               <form
@@ -749,8 +794,8 @@ function QuestionnairePage() {
                   disabled={isSending}
                   aria-label={
                     isReview
-                      ? "Review your answers"
-                      : SECTIONS[currentSection].title
+                      ? tr("Review your answers")
+                      : tr(SECTIONS[currentSection].title)
                   }
                 >
                   {isReview ? (
@@ -765,13 +810,16 @@ function QuestionnairePage() {
                 </fieldset>
                 {Object.keys(errors).length > 0 && (
                   <p className="q-error q-error-summary" role="alert">
-                    Please complete the highlighted questions to continue.
+                    {tr(
+                      "Please complete the highlighted questions to continue.",
+                    )}
                   </p>
                 )}
                 {isReview && (
                   <p className="q-send-note">
-                    When you send, your answers and selected photos will be
-                    shared with the Roxana team.
+                    {tr(
+                      "When you send, your answers and selected photos will be shared with the Roxana team.",
+                    )}
                   </p>
                 )}
                 <div className="q-actions">
@@ -781,10 +829,10 @@ function QuestionnairePage() {
                     disabled={isSending}
                   >
                     {isSending
-                      ? "Sending…"
+                      ? tr("Sending…")
                       : isReview
-                        ? "Send questionnaire"
-                        : "Let's continue"}
+                        ? tr("Send questionnaire")
+                        : tr("Let's continue")}
                     {!isSending && <ArrowIcon />}
                   </button>
                   {currentSection > 0 && (
@@ -795,21 +843,28 @@ function QuestionnairePage() {
                       onClick={() => goToSection(currentSection - 1)}
                     >
                       <ArrowIcon back={true} />
-                      Previous step
+                      {tr("Previous step")}
                     </button>
                   )}
                 </div>
                 {isSending && (
                   <p className="q-hint q-status" role="status">
-                    Sending your answers and photos. Please keep this page open.
+                    {tr(
+                      "Sending your answers and photos. Please keep this page open.",
+                    )}
                     {sendProgress[1] > 0
-                      ? ` (${formatNumber(sendProgress[0])} of ${formatNumber(sendProgress[1])})`
+                      ? " (" +
+                        tr("{sent} of {total}", {
+                          sent: formatNumber(sendProgress[0]),
+                          total: formatNumber(sendProgress[1]),
+                        }) +
+                        ")"
                       : ""}
                   </p>
                 )}
                 {submitError && (
                   <p className="q-error q-error-summary" role="alert">
-                    {submitError}
+                    {tr(submitError)}
                   </p>
                 )}
               </form>
