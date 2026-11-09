@@ -1,0 +1,14 @@
+/* English adaptation. Original dimensions, colors, spacing and breakpoints remain. */
+:root {
+  font-family: Arial, Helvetica, sans-serif;
+  font-variant-numeric: lining-nums;
+}
+html, body { direction: ltr; text-align: left; }
+.hero-video::after { background: linear-gradient(90deg, #f0f9fa99, transparent); }
+.about-intro__copy, .q-field textarea { text-align: left; }
+.q-stepper li:not(:last-child)::after { right: auto; left: calc(50% + 21px); }
+.q-arrow { transform: rotate(180deg); }
+.q-arrow-back { transform: none; }
+.q-skip { right: auto; left: 12px; }
+.q-note-icon { transform: scaleX(-1); }
+@media (max-width: 680px) { .q-header-label { text-align: right; } }
